@@ -46,7 +46,7 @@ jobs:
         id: release
         with:
           release-type: python
-          package-name: petals
+          package-name: textual-pixels
 
       - name: tag stable versions
         if: ${{ steps.release.outputs.release_created }}

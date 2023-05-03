@@ -91,7 +91,8 @@ class ShortHelp(BaseHelp):
 
     def __has_long_help_entries(self, entries: list[HelpEntry]) -> bool:
         long_help_entries = self._get_entries_from_bindings()
-        long_help_entries.remove(self.toggle_key)
+        if self.toggle_key in long_help_entries:
+            long_help_entries.remove(self.toggle_key)
         return bool(set(long_help_entries) - set(entries))
 
     def _create_help(self) -> Text:

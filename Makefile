@@ -46,7 +46,7 @@ test: ## test
 ##@ Execution Targets
 .PHONY: app
 demo: ## Run demo
-	python -m petals 
+	python -m textual_pixels 
 
 console: ## Run dev console
 	textual console

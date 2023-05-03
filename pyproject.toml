@@ -1,10 +1,13 @@
 [tool.poetry]
-name = "petals"
+name = "textual-pixels"
 version = "0.1.0"
 description = "Beautiful TUI components written on top of Textual"
 authors = ["Shashank Tomar <shashank004@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "textual_pixels"}]
+repository = "https://github.com/shashanktomar/textual-pixels"
+keywords = ["textual", "terminal", "TUI"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.color import Color
 from textual.widgets import Static
 
-from petals.widgets import Help, HelpEntry
+from textual_pixels.widgets import Help, HelpEntry
 
 
 class Bar(Static):
