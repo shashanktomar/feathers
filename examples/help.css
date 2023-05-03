@@ -1,0 +1,25 @@
+Screen {
+  layout: horizontal;
+}
+
+Bar {
+    height: 5;    
+    content-align: center middle;
+    text-style: bold;
+    margin: 1 2;
+    color: $text;
+}
+
+Static {
+    content-align: center middle;
+}
+
+.column {
+  width: 1fr;
+  height: 100%;
+  border: round white;
+}
+
+.column :focus {
+  border: round $accent;
+}
