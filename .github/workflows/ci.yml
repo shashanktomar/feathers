@@ -47,6 +47,12 @@ jobs:
           release-type: python
           package-name: textual-pixels
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11 
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.4.2 
       - name: publish to pypi
         if: ${{ steps.release.outputs.release_created }}
         env:
