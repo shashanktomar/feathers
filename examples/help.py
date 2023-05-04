@@ -33,12 +33,12 @@ class ColorBars(Static, can_focus=True):
     def key_space(self) -> None:
         self.log("space pressed")
 
-    # def short_help_keys(self) -> list[HelpEntry]:
-    #     return [
-    #         HelpEntry("r", "move up"),
-    #         HelpEntry("g", "move down"),
-    #         HelpEntry("b", "move down"),
-    #     ]
+    def short_help_keys(self) -> list[HelpEntry]:
+        return [
+            HelpEntry("r", "move up"),
+            HelpEntry("g", "move down"),
+            HelpEntry("b", "move down"),
+        ]
 
 
 class Box(Static, can_focus=True):

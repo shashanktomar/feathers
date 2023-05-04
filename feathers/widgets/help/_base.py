@@ -23,6 +23,9 @@ class BaseHelp(Static):
     def _create_help(self) -> Text:
         pass
 
+    def _can_switch(self) -> bool:
+        return True
+
     def _get_entries_from_bindings(self) -> list[HelpEntry]:
         binding_entries = set([HelpEntry.from_binding(b) for (_, b) in self.app.namespace_bindings.values() if b.show])
         return sorted(list(binding_entries), key=lambda entry: entry.name)

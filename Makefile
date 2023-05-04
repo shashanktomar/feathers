@@ -43,6 +43,9 @@ fix: ## fix linting errors using ruff and black
 test: ## test
 	poetry run pytest
 
+cov: ## test with coverage report
+	 poetry run pytest --cov=feathers/ tests/ && poetry run coverage
+
 ##@ Execution Targets
 .PHONY: app
 demo: ## Run demo
