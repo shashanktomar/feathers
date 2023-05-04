@@ -47,6 +47,8 @@ jobs:
         with:
           release-type: python
           package-name: feathers
+          bump-minor-pre-major: true # Should breaking changes before 1.0.0 produce minor bumps?
+          bump-patch-for-minor-pre-major: true # Should feat changes before 1.0.0 produce patch bumps instead of minor bumps? 
 
       - name: publish to pypi
         if: ${{ steps.release.outputs.release_created }}
