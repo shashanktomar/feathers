@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feathers"
-version = "0.1.0"
+version = "0.1.1"
 description = "Beautiful TUI components written on top of Textual"
 authors = ["Shashank Tomar <shashank004@gmail.com>"]
 license = "MIT"
