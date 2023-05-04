@@ -4,6 +4,7 @@ from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import ContentSwitcher
 
+from ._base import BaseHelp
 from ._long_help import LongHelp
 from ._models import HelpEntry
 from ._short_help import ShortHelp
@@ -37,19 +38,18 @@ class Help(Widget):
         disabled: bool = False,
     ) -> None:
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
-        self.toggle_key = toggle_key
-        self.short_help_separator = short_help_separator
-        self.short_help_placeholder = short_help_placeholder
-        self.long_help_separator = long_help_separator
+
+        self._short_help: BaseHelp = ShortHelp("short-help", toggle_key, short_help_separator, short_help_placeholder)
+        self._long_help: BaseHelp = LongHelp("long-help", long_help_separator)
 
     def compose(self) -> ComposeResult:
         with ContentSwitcher(initial="short-help"):
-            yield ShortHelp("short-help", self.toggle_key, self.short_help_separator, self.short_help_placeholder)
-            yield LongHelp("long-help", self.long_help_separator)
+            yield self._short_help
+            yield self._long_help
 
     def toggle_view(self) -> None:
         switcher = self.query_one(ContentSwitcher)
-        if switcher.current == "short-help":
+        if switcher.current == "short-help" and self._short_help._can_switch():
             switcher.current = "long-help"
         else:
             switcher.current = "short-help"
