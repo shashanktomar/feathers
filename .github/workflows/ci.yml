@@ -50,6 +50,12 @@ jobs:
           bump-minor-pre-major: true # Should breaking changes before 1.0.0 produce minor bumps?
           bump-patch-for-minor-pre-major: true # Should feat changes before 1.0.0 produce patch bumps instead of minor bumps? 
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11 
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.4.2 
       - name: publish to pypi
         if: ${{ steps.release.outputs.release_created }}
         env:
