@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 
-from textual_pixels.widgets import Help
+from feathers.widgets import Help
 
 
 class DemoApp(App):

@@ -1,6 +1,7 @@
 name: CI
 on:
   push:
+  pull_request:
 
 concurrency:
   group: github.head_ref
@@ -45,7 +46,7 @@ jobs:
         id: release
         with:
           release-type: python
-          package-name: textual-pixels
+          package-name: feathers
 
       - name: publish to pypi
         if: ${{ steps.release.outputs.release_created }}
