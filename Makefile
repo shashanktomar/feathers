@@ -50,3 +50,7 @@ demo: ## Run demo
 
 console: ## Run dev console
 	textual console
+
+##@ Release Targets
+publish: ## publish to pypi
+	poetry publish --build
