@@ -70,6 +70,7 @@ class HelpDemo(App):
 
     BINDINGS = [
         Binding("?", "toggle_help_view", "Toggle help", key_display="?"),
+        Binding("p", "toggle_help_view", "preview", key_display="p"),
     ]
 
     def compose(self) -> ComposeResult:
