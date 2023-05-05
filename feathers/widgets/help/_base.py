@@ -18,6 +18,7 @@ class BaseHelp(Static):
     def _on_mount(self, _: events.Mount) -> None:
         self.watch(self.screen, "focused", self.__reset)
         self.watch(self.screen, "stack_updates", self.__reset)
+        self.__reset(None)
 
     @abstractmethod
     def _create_help(self) -> Text:

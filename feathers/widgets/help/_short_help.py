@@ -45,7 +45,37 @@ class ShortHelp(BaseHelp):
         self.toggle_key = toggle_key
         self.separator = separator
         self.placeholder_text: str = placeholder_text
+
         self._can_switch_to_long_help: bool = False
+        self._text_style = Text(
+            style=self.rich_style,
+            no_wrap=True,
+            overflow="ellipsis",
+            justify="left",
+            end="",
+        )
+
+    def _can_switch(self) -> bool:
+        return self._can_switch_to_long_help
+
+    def _create_help(self) -> Text:
+        text = self._text_style.copy()
+        entries = self.__get_entries()
+
+        if self.__has_long_help_entries(entries):
+            self._can_switch_to_long_help = True
+            entries.append(self.toggle_key)
+        else:
+            self._can_switch_to_long_help = False
+
+        if len(entries) == 0:
+            return self.__get_placeholder_text()
+
+        separator_style = self.get_component_rich_style("shorthelp--separator")
+        separator = text.append(self.separator, separator_style)
+
+        entry_texts = [self.__entry_text(e) for e in entries]
+        return separator.join(entry_texts)
 
     def __entry_text(self, entry: HelpEntry) -> Text:
         key_style = self.get_component_rich_style("shorthelp--key")
@@ -95,32 +125,3 @@ class ShortHelp(BaseHelp):
         if self.toggle_key in long_help_entries:
             long_help_entries.remove(self.toggle_key)
         return bool(set(long_help_entries) - set(entries))
-
-    def _can_switch(self) -> bool:
-        return self._can_switch_to_long_help
-
-    def _create_help(self) -> Text:
-        text = Text(
-            style=self.rich_style,
-            no_wrap=True,
-            overflow="ellipsis",
-            justify="left",
-            end="",
-        )
-
-        entries = self.__get_entries()
-
-        if self.__has_long_help_entries(entries):
-            self._can_switch_to_long_help = True
-            entries.append(self.toggle_key)
-        else:
-            self._can_switch_to_long_help = False
-
-        if len(entries) == 0:
-            return self.__get_placeholder_text()
-
-        separator_style = self.get_component_rich_style("shorthelp--separator")
-        separator = text.append(self.separator, separator_style)
-
-        entry_texts = [self.__entry_text(e) for e in entries]
-        return separator.join(entry_texts)
