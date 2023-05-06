@@ -21,6 +21,9 @@ install: ## install all dependencies
 update: ## update deps
 	poetry update
 
+info: ## venv info
+	poetry env info
+
 ##@ Linting Targets
 lint-ruff: ## ruff check
 	poetry run ruff check .

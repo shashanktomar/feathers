@@ -29,37 +29,37 @@ class Measurement:
         self._entry_sep_w: int | None = None
         self._entry_desc_w: int | None = None
 
-    def _entry_key_width(self) -> int:
+    def _key_width(self) -> int:
         if self._entry_key_w is None:
             max_provided_key_width = max(len(entry.name) for entry in self.entries)
             self._entry_key_w = min(max_provided_key_width, self.max_key_w)
         return self._entry_key_w
 
-    def _entry_separator_width(self) -> int:
+    def _separator_width(self) -> int:
         if self._entry_sep_w is None:
             self._entry_sep_w = min(len(self.separator), self.max_separator_w)
         return self._entry_sep_w
 
-    def _entry_desc_width(self) -> int:
+    def _desc_width(self) -> int:
         if self._entry_desc_w is None:
             max_provided_desc_width = max(len(entry.description) for entry in self.entries)
             leftover_width = self.max_w - (
-                self._entry_key_width() + self._entry_separator_width() + (2 * self.col_padding)
+                self._key_width() + self._separator_width() + (2 * self.col_padding)
             )
             self._entry_desc_w = min(max_provided_desc_width, leftover_width)
         return self._entry_desc_w
 
     @property
     def entry_widths(self) -> tuple[int, int, int]:
-        return (self._entry_key_width(), self._entry_separator_width(), self._entry_desc_width())
+        return (self._key_width(), self._separator_width(), self._desc_width())
 
     @property
     def col_width(self) -> int:
         if self._col_w is None:
             entry_w = (
-                self._entry_key_width()
-                + self._entry_separator_width()
-                + self._entry_desc_width()
+                self._key_width()
+                + self._separator_width()
+                + self._desc_width()
                 + (2 * self.col_padding)
             )
             self._col_w = min(entry_w, self.max_w)
