@@ -20,6 +20,10 @@ class BaseHelp(Static):
         self.watch(self.screen, "stack_updates", self.__reset)
         self.__reset(None)
 
+    # called by textual
+    def _notify_style_update(self) -> None:
+        self.__reset(None)
+
     @abstractmethod
     def _create_help(self) -> Text:
         pass

@@ -43,9 +43,7 @@ class Measurement:
     def _desc_width(self) -> int:
         if self._entry_desc_w is None:
             max_provided_desc_width = max(len(entry.description) for entry in self.entries)
-            leftover_width = self.max_w - (
-                self._key_width() + self._separator_width() + (2 * self.col_padding)
-            )
+            leftover_width = self.max_w - (self._key_width() + self._separator_width() + (2 * self.col_padding))
             self._entry_desc_w = min(max_provided_desc_width, leftover_width)
         return self._entry_desc_w
 
@@ -56,12 +54,7 @@ class Measurement:
     @property
     def col_width(self) -> int:
         if self._col_w is None:
-            entry_w = (
-                self._key_width()
-                + self._separator_width()
-                + self._desc_width()
-                + (2 * self.col_padding)
-            )
+            entry_w = self._key_width() + self._separator_width() + self._desc_width() + (2 * self.col_padding)
             self._col_w = min(entry_w, self.max_w)
         return self._col_w
 

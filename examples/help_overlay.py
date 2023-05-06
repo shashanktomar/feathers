@@ -4,7 +4,6 @@ from typing import cast
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.color import Color
 from textual.widgets import Static
 
 from feathers.widgets import Help, HelpEntry
