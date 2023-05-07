@@ -1,0 +1,28 @@
+Screen {
+  layout: horizontal;
+  layers: base overlay;
+}
+
+Static {
+    content-align: center middle;
+}
+
+.box {
+  layer: base;
+  width: 1fr;
+  height: 100%;
+  border: round white;
+  margin-bottom: 1;
+}
+
+.box :focus {
+  border: round $accent;
+}
+
+Help {
+  layer: overlay;
+}
+
+LongHelp {
+  background: $background-darken-1;
+}
