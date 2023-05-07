@@ -1,0 +1,10 @@
+Chat {
+    border: round white;
+    height: 1fr;
+}
+
+Static {
+    border: round white;
+    height: 4;
+    color: $text-disabled;
+}
