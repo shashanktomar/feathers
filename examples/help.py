@@ -80,7 +80,7 @@ class HelpDemo(App):
 
     def action_toggle_help_view(self) -> None:
         help = cast(Help, self.query_one("Help"))
-        help.toggle_view()
+        help.toggle_help()
 
 
 if __name__ == "__main__":

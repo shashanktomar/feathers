@@ -1,7 +1,6 @@
 name: CI
 on:
   push:
-  pull_request:
 
 concurrency:
   group: github.head_ref
