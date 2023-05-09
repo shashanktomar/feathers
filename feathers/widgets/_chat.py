@@ -74,10 +74,6 @@ class Chat(Widget):
     Chat {
         padding: 1;
     }
-
-    Chat > Widget {
-        scrollbar-size-vertical: 1;
-    }
     """
 
     def __init__(
@@ -109,10 +105,15 @@ class Chat(Widget):
         # self._chat_log.write(RenderableChatEntry(self._entry_renderer, entry))
         text = Text.assemble(
             (f"{entry.participant.name}: ", Style(color=entry.participant.color)),
-            (entry.message, self.rich_style),
+            (entry.message),
             end="\n\n",
         )
-        self._chat_log.write(text, shrink=True)
+        self.log(text)
+        self._chat_log.write(text)
+        self.log(self.scrollable_content_region)
+        self.log(self._chat_log.scrollable_content_region)
+        self.log(self.content_size)
+        self.log(self.content_region)
 
     def get_entries(self) -> list[ChatEntry]:
         return self._entries

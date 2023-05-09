@@ -75,11 +75,13 @@ class ChatDemo(App):
     CSS_PATH = "chat.css"
 
     def compose(self) -> ComposeResult:
-        chat = Chat()
+        yield Chat()
+        yield Static("Type message and press Enter to send.")
+
+    def on_mount(self)-> None:
+        chat = self.query_one(Chat)
         for entry in chatEntries:
             chat.add(entry)
-        yield chat
-        yield Static("Type message and press Enter to send.")
 
 
 if __name__ == "__main__":
