@@ -1,0 +1,14 @@
+Screen {
+    layout: grid;
+    grid-size: 2 2;
+}
+
+.box {
+  border: round white;
+  padding: 1;
+}
+
+.box :focus {
+  border: round $accent;
+}
+
