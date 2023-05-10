@@ -8,13 +8,14 @@ from rich.pretty import Pretty
 from rich.protocol import is_renderable
 from rich.text import Text
 from textual.geometry import Size
-from textual.scroll_view import ScrollView
 from textual.strip import Strip
 
 from feathers.cache import CacheListener, RenderablesCache, RenderableWithOptions
 
+from ._nav_view import NavigableView
 
-class CachedView(ScrollView, CacheListener):
+
+class CachedView(NavigableView, CacheListener):
     DEFAULT_CSS = """
     TextLog{
         background: $surface;
@@ -129,16 +130,27 @@ class CachedView(ScrollView, CacheListener):
         self.refresh()
         return self
 
-    def render_line(self, y: int) -> Strip:
-        scroll_x, scroll_y = self.scroll_offset
-        line = self._render_line(scroll_y + y, scroll_x, self.size.width)
-        strip = line.apply_style(self.rich_style)
-        return strip
-
     def on_cache_update(self):
         self.virtual_size = self._renderables_cache.virtual_size
         if self.auto_scroll:
             self.scroll_end(animate=False)
+
+    def lines_count(self) -> int:
+        return len(self._renderables_cache)
+
+    def line_at(self, y: int) -> Strip:
+        _, scroll_y = self.scroll_offset
+        line = self._renderables_cache.strip_at(scroll_y + y)
+        if line is None:
+            return Strip.blank(0)
+        return line
+
+    def render_line(self, y: int) -> Strip:
+        scroll_x, scroll_y = self.scroll_offset
+        line = self._render_line(scroll_y + y, scroll_x, self.size.width)
+        strip = line.apply_style(self.rich_style)
+        strip = self.add_cursor_to_line(y, line)
+        return strip
 
     def _render_line(self, y: int, scroll_x: int, width: int) -> Strip:
         strip = self._renderables_cache.strip_at(y)
