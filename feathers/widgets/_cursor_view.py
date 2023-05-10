@@ -1,18 +1,31 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from rich.containers import Lines
 from rich.repr import Result
-from rich.text import Text
 from textual.binding import Binding, BindingType
 from textual.events import Blur, Mount
-from textual.geometry import Offset, Size
+from textual.geometry import Offset
+from textual.message import Message
 from textual.reactive import reactive
 from textual.scroll_view import ScrollView
 
 from feathers.text import Block
+from feathers.utils import friendly_list
+
+CursorMode = Literal["view", "edit"]
+"""The names of the valid cursor modes.
+
+These are the modes that can be used with a [`Cursor`][feathers.widgets.CursorView].
+"""
+
+_VALID_CURSOR_MODES = {"view", "edit"}
+
+
+class InvalidCursorMode(Exception):
+    """Exception raised if an invalid cursor mode is used."""
 
 
 class CursorView(ScrollView, can_focus=True):
@@ -40,10 +53,91 @@ class CursorView(ScrollView, can_focus=True):
 
     cursor_position: reactive[Offset] = reactive(Offset(0, 0))
     cursor_blink = reactive(True)
+    mode: reactive[CursorMode] = reactive[CursorMode]("view")
+    """This decide how the cursor behave, it can be in view or in edit mode"""
     _cursor_visible = reactive(True)
+
+    class Changed(Message, bubble=False):
+        """Posted when the cursor value changes.
+
+        Can be handled using `on_cursor_view_changed` in a subclass of `CursorView` or in a parent
+        widget in the DOM.
+
+        Attributes:
+            value: The value that the cursor was changed to. It is the offset of the cursor
+            cursor_view: Reference to the originating parent CursorView
+        """
+
+        def __init__(self, cursor_view: CursorView, value: Offset) -> None:
+            super().__init__()
+            self.cursor_view: CursorView = cursor_view
+            self.value: Offset = value
+            self._content_size = self.cursor_view.content_size
+
+        @property
+        def control(self) -> CursorView:
+            """Alias for self.cursor_view."""
+            return self.cursor_view
+
+    class SeekBottom(Message, bubble=False):
+        """Posted when the cursor is pushed beyond bottom of the available content height.
+
+        Can be handled using `on_cursor_view_seek_bottom` in a subclass of `CursorView` or in a parent
+        widget in the DOM.
+
+        Attributes:
+            cursor_view: Reference to the originating parent CursorView
+        """
+
+        def __init__(self, cursor_view: CursorView) -> None:
+            super().__init__()
+            self.cursor_view: CursorView = cursor_view
+
+    class SeekTop(Message, bubble=False):
+        """Posted when the cursor is pushed beyond top of the availalbe content height.
+
+        Can be handled using `on_cursor_view_seek_top` in a subclass of `CursorView` or in a parent
+        widget in the DOM.
+
+        Attributes:
+            cursor_view: Reference to the originating parent CursorView
+        """
+
+        def __init__(self, cursor_view: CursorView) -> None:
+            super().__init__()
+            self.cursor_view: CursorView = cursor_view
+
+    class SeekLeft(Message, bubble=False):
+        """Posted when the cursor is pushed beyond left of the availalbe content width.
+
+        Can be handled using `on_cursor_view_seek_left` in a subclass of `CursorView` or in a parent
+        widget in the DOM.
+
+        Attributes:
+            cursor_view: Reference to the originating parent CursorView
+        """
+
+        def __init__(self, cursor_view: CursorView) -> None:
+            super().__init__()
+            self.cursor_view: CursorView = cursor_view
+
+    class SeekRight(Message, bubble=False):
+        """Posted when the cursor is pushed beyond right of the availalbe content width.
+
+        Can be handled using `on_cursor_view_seek_right` in a subclass of `CursorView` or in a parent
+        widget in the DOM.
+
+        Attributes:
+            cursor_view: Reference to the originating parent CursorView
+        """
+
+        def __init__(self, cursor_view: CursorView) -> None:
+            super().__init__()
+            self.cursor_view: CursorView = cursor_view
 
     def __init__(
         self,
+        mode: CursorMode = "view",
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -52,12 +146,14 @@ class CursorView(ScrollView, can_focus=True):
         """Initialise the `Input` widget.
 
         Args:
+            mode: A mode in which cursor view should operate.
             name: Optional name for the input widget.
             id: Optional ID for the widget.
             classes: Optional initial classes for the widget.
             disabled: Whether the input is disabled or not.
         """
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        self.mode = mode
 
     @abstractmethod
     def visible_block(self) -> Block:
@@ -84,6 +180,12 @@ class CursorView(ScrollView, can_focus=True):
             focused_line.stylize(cursor_style, cursor_pos, cursor_pos + 1)
         return Lines(lines[:y] + [focused_line] + lines[y + 1 :])
 
+    def validate_mode(self, mode: str) -> str:
+        """Validate the mode."""
+        if mode not in _VALID_CURSOR_MODES:
+            raise InvalidCursorMode(f"Valid cursor modes are {friendly_list(_VALID_CURSOR_MODES)}")
+        return mode
+
     # def _position_to_cell(self, position: int) -> int:
     #     """Convert an index within the value to cell position."""
     #     cell_offset = cell_len(self.value[:position])
@@ -105,18 +207,24 @@ class CursorView(ScrollView, can_focus=True):
     # def validate_cursor_position(self, cursor_position: int) -> int:
     #     return min(max(0, cursor_position), len(self.value))
 
-    def watch_cursor_position(self, cursor_position: int) -> None:
-        """
-        Notes: Here we take care of the scrolling.
-        """
-        pass
+    def watch_cursor_position(self, cursor_position: Offset) -> None:
+        self.post_message(self.Changed(self, cursor_position))
 
     def validate_cursor_position(self, cursor_position: Offset) -> Offset:
-        lines = self.visible_lines()
         content_w, content_h = self.content_size
+        if cursor_position.y == content_h:
+            self.post_message(self.SeekBottom(self))
+        if cursor_position.y < 0:
+            self.post_message(self.SeekTop(self))
+        if cursor_position.x < 0:
+            self.post_message(self.SeekLeft(self))
+        if cursor_position.x == content_w:
+            self.post_message(self.SeekRight(self))
+
+        lines = self.visible_lines()
         y = min(cursor_position.y, len(lines) - 1, content_h - 1)
         line = lines[y]
-        x = min(cursor_position.x, line.cell_len - 1, content_w - 1)
+        x = min(cursor_position.x, line.cell_len - 1, content_w)
         pos = Offset(x, y)
         return pos.clamped
 

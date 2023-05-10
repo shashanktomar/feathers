@@ -36,6 +36,18 @@ class NavigableBox(CursorView, can_focus=True):
     #     s = Segment("Hi There")
     #     return Block([Strip([s])])
 
+    def on_cursor_view_changed(self, event: CursorView.Changed) -> None:
+        self.log("------------->")
+        self.log(event)
+
+    def on_cursor_view_seekbottom(self, event: CursorView.SeekBottom) -> None:
+        self.log("------------->")
+        self.log(event)
+
+    def on_cursor_view_seek_top(self, event: CursorView.SeekBottom) -> None:
+        self.log("------------->")
+        self.log(event)
+
     def visible_lines(self) -> Lines:
         if self._lines is None:
             self._lines = self._text.split()
