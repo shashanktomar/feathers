@@ -16,11 +16,12 @@ from ._nav_view import NavigableView
 
 
 class CachedView(NavigableView, CacheListener):
+    # scrollbar-gutter here is a fix to calculate scrollbar_gutter which impact the scrollable_content_region
+    # calculation in `on_resize`. This looks like a bug in base widget code. Without this, the horizontal scrollbar
+    # shows up for few characters on first call to `on_resize`
     DEFAULT_CSS = """
-    TextLog{
-        background: $surface;
-        color: $text;
-        overflow-y: scroll;
+    CachedView{
+        scrollbar-gutter: stable;
     }
     """
 
@@ -149,7 +150,7 @@ class CachedView(NavigableView, CacheListener):
         scroll_x, scroll_y = self.scroll_offset
         line = self._render_line(scroll_y + y, scroll_x, self.size.width)
         strip = line.apply_style(self.rich_style)
-        strip = self.add_cursor_to_line(y, line)
+        strip = self.add_cursor(y, line)
         return strip
 
     def _render_line(self, y: int, scroll_x: int, width: int) -> Strip:
@@ -157,12 +158,6 @@ class CachedView(NavigableView, CacheListener):
         if strip is None:
             return Strip.blank(width, self.rich_style)
 
-        # key = (y + self._start_line, scroll_x, width, self.max_width)
-        # if key in self._line_cache:
-        #     return self._line_cache[key]
-
-        # line = strip.adjust_cell_length(max(self.max_width, width), self.rich_style).crop(scroll_x, scroll_x + width)
         line = strip.crop(scroll_x, scroll_x + width)
 
-        # self._line_cache[key] = line
         return line

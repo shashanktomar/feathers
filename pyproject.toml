@@ -12,11 +12,11 @@ keywords = ["textual", "terminal", "TUI"]
 [tool.poetry.dependencies]
 python = "^3.8"
 rich = "^13.3.5"
-textual = "^0.22.3"
+textual = "^0.24.1"
 
 
 [tool.poetry.group.dev.dependencies]
-textual = {extras = ["dev"], version = "^0.22.3"}
+textual = {extras = ["dev"], version = "^0.24.1"}
 ruff = "^0.0.264"
 black = "^23.3.0"
 mypy = "^1.2.0"

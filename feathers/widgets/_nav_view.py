@@ -5,7 +5,6 @@ from typing import ClassVar
 
 from rich.repr import Result
 from rich.style import Style
-from rich.text import Text
 from textual.binding import Binding, BindingType
 from textual.events import Blur, Focus
 from textual.geometry import Offset
@@ -16,12 +15,28 @@ from textual.strip import Strip
 
 
 class NavigableView(ScrollView, can_focus=True):
+    """A view which can be navigated using a cursor.
+
+    This should be used as a base class of other scrollable views.
+
+    Attributes:
+        disable_cursor: Disable the cursor. Defaults to False
+    """
+
     BINDINGS: ClassVar[list[BindingType]] = [
-        Binding("left, h", "cursor_left", "cursor left", show=False),
-        Binding("down, j", "cursor_down", "cursor down", show=False),
-        Binding("up, k", "cursor_up", "cursor up", show=False),
-        Binding("right, l", "cursor_right", "cursor right", show=False),
+        Binding("left, h", "cursor_left", "move left", show=True),
+        Binding("up, k", "cursor_up", "move up", show=True),
+        Binding("right, l", "cursor_right", "move right", show=True),
+        Binding("down, j", "cursor_down", "move down", show=True),
     ]
+    """
+    | Key(s) | Description |
+    | :- | :- |
+    | left, h | Move the cursor left. |
+    | up, k | Move the cursor up. |
+    | right, l | Move the cursor right. |
+    | down, j | Move the cursor down. |
+    """
 
     COMPONENT_CLASSES: ClassVar[set[str]] = {"navigation-box--cursor"}
     """
@@ -151,27 +166,20 @@ class NavigableView(ScrollView, can_focus=True):
     def line_width(self, y: int) -> int:
         pass
 
-    def add_cursor_to_line(self, y: int, line: Strip) -> Strip:
+    def add_cursor(self, y: int, line: Strip) -> Strip:
         if self.cursor_position.y != y or self._is_cursor_hidden:
             return line
 
         cursor_style = self.get_component_rich_style("navigation-box--cursor")
 
-        cursor_pos = min(self.cursor_position.x, line.cell_length)
+        cursor_pos = max(0, min(self.cursor_position.x, line.cell_length - 1))
         return self._add_style_to_strip(line, cursor_pos, cursor_style)
 
-    def add_cursor_to_text(self, y: int, line: Text) -> Text:
-        if self.cursor_position.y != y or self._is_cursor_hidden:
-            return line
-
-        cursor_style = self.get_component_rich_style("navigation-box--cursor")
-
-        focused_line = line.copy()  # do not change the original line
-        cursor_pos = min(self.cursor_position.x, focused_line.cell_len)
-        focused_line.stylize(cursor_style, cursor_pos, cursor_pos + 1)
-        return focused_line
-
     def _add_style_to_strip(self, line: Strip, pos: int, style: Style) -> Strip:
+        # for empty strips, we still want to show the cursor
+        if line.cell_length == 0:
+            line = Strip.blank(1)
+
         strips = line.divide([pos, pos + 1, line.cell_length])
         if len(strips) < 2:
             return line
@@ -188,7 +196,7 @@ class NavigableView(ScrollView, can_focus=True):
         self.post_message(self.Changed(self, value))
 
     def validate_cursor_position(self, cursor_position: Offset) -> Offset:
-        content_w, content_h = self.content_size
+        content_w, content_h = self.scrollable_content_region.size
         if cursor_position.y == content_h:
             self.post_message(self.SeekBottom(self))
         if cursor_position.y < 0:
@@ -200,7 +208,7 @@ class NavigableView(ScrollView, can_focus=True):
 
         y = min(cursor_position.y, self.line_count() - 1, content_h - 1)
         line_width = self.line_width(y)
-        x = min(cursor_position.x, line_width - 1, content_w)
+        x = min(cursor_position.x, line_width - 1, content_w - 1)
         pos = Offset(x, y)
         return pos.clamped
 
