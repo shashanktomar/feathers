@@ -36,6 +36,7 @@ class CachedView(NavigableView, CacheListener):
         highlight: bool = False,
         markup: bool = False,
         auto_scroll: bool = True,
+        enable_cursor: bool = False,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -44,18 +45,17 @@ class CachedView(NavigableView, CacheListener):
         """Create a TextLog widget.
 
         Args:
-            max_lines: Maximum number of lines in the log or `None` for no maximum.
-            min_width: Minimum width of renderables.
             wrap: Enable word wrapping (default is off).
             highlight: Automatically highlight content.
             markup: Apply Rich console markup.
             auto_scroll: Enable automatic scrolling to end.
+            enable_cursor: Enable cursor which name this view navigable. This also make this view focusable.
             name: The name of the text log.
             id: The ID of the text log in the DOM.
             classes: The CSS classes of the text log.
             disabled: Whether the text log is disabled or not.
         """
-        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        super().__init__(disable_cursor=not enable_cursor, name=name, id=id, classes=classes, disabled=disabled)
         self.wrap = wrap
         """Enable word wrapping."""
         self.highlight = highlight
@@ -135,15 +135,15 @@ class CachedView(NavigableView, CacheListener):
         if self.auto_scroll:
             self.scroll_end(animate=False)
 
-    def lines_count(self) -> int:
+    def line_count(self) -> int:
         return len(self._renderables_cache)
 
-    def line_at(self, y: int) -> Strip:
+    def line_width(self, y: int) -> int:
         _, scroll_y = self.scroll_offset
         line = self._renderables_cache.strip_at(scroll_y + y)
         if line is None:
-            return Strip.blank(0)
-        return line
+            return 0
+        return line.cell_length
 
     def render_line(self, y: int) -> Strip:
         scroll_x, scroll_y = self.scroll_offset

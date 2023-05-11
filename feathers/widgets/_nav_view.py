@@ -5,6 +5,7 @@ from typing import ClassVar
 
 from rich.repr import Result
 from rich.style import Style
+from rich.text import Text
 from textual.binding import Binding, BindingType
 from textual.events import Blur, Focus
 from textual.geometry import Offset
@@ -36,9 +37,6 @@ class NavigableView(ScrollView, can_focus=True):
         text-style: reverse;
     }
     """
-
-    cursor_position: reactive[Offset] = reactive(Offset(0, 0))
-    _cursor_visible = reactive(True)
 
     class Changed(Message, bubble=False):
         """Posted when the cursor value changes.
@@ -118,8 +116,13 @@ class NavigableView(ScrollView, can_focus=True):
             super().__init__()
             self.cursor_view: NavigableView = cursor_view
 
+    cursor_position: reactive[Offset] = reactive(Offset(0, 0))
+    _cursor_visible = reactive(False)
+
     def __init__(
         self,
+        *,
+        disable_cursor: bool = False,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -135,25 +138,38 @@ class NavigableView(ScrollView, can_focus=True):
             disabled: Whether the input is disabled or not.
         """
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        self.cursor_disabled = disable_cursor
+        if disable_cursor:
+            NavigableView.BINDINGS.clear()
+            self.can_focus = False
 
     @abstractmethod
-    def lines_count(self) -> int:
+    def line_count(self) -> int:
         pass
 
     @abstractmethod
-    def line_at(self, y: int) -> Strip:
+    def line_width(self, y: int) -> int:
         pass
 
     def add_cursor_to_line(self, y: int, line: Strip) -> Strip:
-        if self.cursor_position.y != y:
+        if self.cursor_position.y != y or self._is_cursor_hidden:
             return line
 
         cursor_style = self.get_component_rich_style("navigation-box--cursor")
 
-        if self._cursor_visible and self.has_focus:
-            cursor_pos = min(self.cursor_position.x, line.cell_length)
-            return self._add_style_to_strip(line, cursor_pos, cursor_style)
-        return line
+        cursor_pos = min(self.cursor_position.x, line.cell_length)
+        return self._add_style_to_strip(line, cursor_pos, cursor_style)
+
+    def add_cursor_to_text(self, y: int, line: Text) -> Text:
+        if self.cursor_position.y != y or self._is_cursor_hidden:
+            return line
+
+        cursor_style = self.get_component_rich_style("navigation-box--cursor")
+
+        focused_line = line.copy()  # do not change the original line
+        cursor_pos = min(self.cursor_position.x, focused_line.cell_len)
+        focused_line.stylize(cursor_style, cursor_pos, cursor_pos + 1)
+        return focused_line
 
     def _add_style_to_strip(self, line: Strip, pos: int, style: Style) -> Strip:
         strips = line.divide([pos, pos + 1, line.cell_length])
@@ -164,35 +180,12 @@ class NavigableView(ScrollView, can_focus=True):
         changed_strips[1] = cursor_strip.apply_style(style)
         return Strip.join(changed_strips)
 
-    # def add_cursor(self) -> Lines:
-    #     lines = self.visible_lines()
-    #     if len(lines) > self.cursor_position.y:
-    #         self.cursor_position = self.validate_cursor_position(self.cursor_position)
-    #
-    #     y = self.cursor_position.y
-    #     cursor_style = self.get_component_rich_style("navigation-box--cursor")
-    #
-    #     focused_line = lines[y].copy()
-    #     if self._cursor_visible and self.has_focus:
-    #         cursor_pos = min(self.cursor_position.x, focused_line.cell_len)
-    #         focused_line.stylize(cursor_style, cursor_pos, cursor_pos + 1)
-    #     return Lines(lines[:y] + [focused_line] + lines[y + 1 :])
+    @property
+    def _is_cursor_hidden(self) -> bool:
+        return self.cursor_disabled or not self._cursor_visible
 
-    # def _position_to_cell(self, position: int) -> int:
-    #     """Convert an index within the value to cell position."""
-    #     cell_offset = cell_len(self.value[:position])
-    #     return cell_offset
-    #
-    # @property
-    # def _cursor_offset(self) -> int:
-    #     """The cell offset of the cursor."""
-    #     offset = self._position_to_cell(self.cursor_position)
-    #     if self._cursor_at_end:
-    #         offset += 1
-    #     return offset
-
-    def watch_cursor_position(self, cursor_position: Offset) -> None:
-        self.post_message(self.Changed(self, cursor_position))
+    def watch_cursor_position(self, value: Offset) -> None:
+        self.post_message(self.Changed(self, value))
 
     def validate_cursor_position(self, cursor_position: Offset) -> Offset:
         content_w, content_h = self.content_size
@@ -205,9 +198,9 @@ class NavigableView(ScrollView, can_focus=True):
         if cursor_position.x == content_w:
             self.post_message(self.SeekRight(self))
 
-        y = min(cursor_position.y, self.lines_count() - 1, content_h - 1)
-        line = self.line_at(y)
-        x = min(cursor_position.x, line.cell_length - 1, content_w)
+        y = min(cursor_position.y, self.line_count() - 1, content_h - 1)
+        line_width = self.line_width(y)
+        x = min(cursor_position.x, line_width - 1, content_w)
         pos = Offset(x, y)
         return pos.clamped
 
@@ -231,21 +224,26 @@ class NavigableView(ScrollView, can_focus=True):
 
     def action_cursor_left(self) -> None:
         """Move the cursor one position to the left."""
-        self.cursor_position += Offset(-1, 0)
+        if not self.cursor_disabled:
+            self.cursor_position += Offset(-1, 0)
 
     def action_cursor_right(self) -> None:
         """Move the cursor one position to the right."""
-        self.cursor_position += Offset(1, 0)
+        if not self.cursor_disabled:
+            self.cursor_position += Offset(1, 0)
 
     def action_cursor_up(self) -> None:
         """Move the cursor one position upwards."""
-        self.cursor_position += Offset(0, -1)
+        if not self.cursor_disabled:
+            self.cursor_position += Offset(0, -1)
 
     def action_cursor_down(self) -> None:
         """Move the cursor one position downwards."""
-        self.cursor_position += Offset(0, 1)
+        if not self.cursor_disabled:
+            self.cursor_position += Offset(0, 1)
 
     def __rich_repr__(self) -> Result:
         yield from super().__rich_repr__()
+        yield "cursor_disabled", self.cursor_disabled
         yield "cursor_position", self.cursor_position
         yield "_cursor_visible", self._cursor_visible

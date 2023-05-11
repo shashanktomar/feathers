@@ -17,9 +17,9 @@ class CachedViewApp(App):
         very_long = "\n".join([self.text[: random.randint(1, len(self.text))] for _ in range(60)])
         long_both_ways = (self.text * 4 + "\n") * 40
         yield CachedView(classes="box").write(self.text)
-        yield CachedView(classes="box").write(long)
+        yield CachedView(classes="box", enable_cursor=True).write(long)
         yield CachedView(classes="box").write(very_long)
-        yield CachedView(classes="box").write(long_both_ways)
+        yield CachedView(classes="box", enable_cursor=True).write(long_both_ways)
 
 
 if __name__ == "__main__":
