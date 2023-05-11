@@ -148,11 +148,11 @@ class LongHelp(BaseHelp):
 
     def _create_help(self) -> Text:
         # avoid division by zero
-        if self.size.width == 0:
+        if self.content_size.width == 0:
             return Text("")
 
         entries = self._get_entries_from_bindings()
-        self._measurement = Measurement(self.size.width, entries, self._separator)
+        self._measurement = Measurement(self.content_size.width, entries, self._separator)
         entry_texts = [self.__entry_text(e) for e in entries]
 
         line_text = Text(
