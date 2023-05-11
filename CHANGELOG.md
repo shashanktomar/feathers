@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/shashanktomar/feathers/compare/v0.1.1...v0.1.2) (2023-05-11)
+
+
+### Features
+
+* **CachedView:** add CachedView widget which is capable of caching renderables for long sequences of texts([#14](https://github.com/shashanktomar/feathers/issues/14)) ([0545d01](https://github.com/shashanktomar/feathers/commit/0545d01ef4ba4bce4b0139392b86c2138c2bc399))
+* **NavigableView:** add NavigableView which abstracts a navigable cursor ([0545d01](https://github.com/shashanktomar/feathers/commit/0545d01ef4ba4bce4b0139392b86c2138c2bc399))
+
 ## [0.1.1](https://github.com/shashanktomar/feathers/compare/v0.1.0...v0.1.1) (2023-05-04)
 
 ### Bug Fixes
