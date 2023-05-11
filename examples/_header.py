@@ -1,11 +1,7 @@
-from typing import cast
+from __future__ import annotations
 
-from rich.color import Color, ColorType
-from rich.rule import Rule
-from rich.style import Style
 from rich.text import Text
 from textual.app import ComposeResult
-from textual.design import ColorSystem
 from textual.widgets import Static
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self, cast
+from typing import cast
 
 from rich.console import RenderableType
 from rich.highlighter import ReprHighlighter
@@ -98,12 +98,13 @@ class CachedView(NavigableView, CacheListener):
         expand: bool = False,
         shrink: bool = True,
         scroll_end: bool | None = None,
-    ) -> Self:
+    ) -> CachedView:
         """Write text or a rich renderable.
 
         Args:
             content: Rich renderable (or text).
-            width: Width to render or `None` to use optimal width. Only used if either or both expand and shrink are True.
+            width: Width to render or `None` to use optimal width.
+                Only used if either or both expand and shrink are True.
             expand: Enable expand to widget width, or `False` to use `width`.
             shrink: Enable shrinking of content to fit width.
             scroll_end: Enable automatic scroll to end, or `None` to use `self.auto_scroll`.
@@ -124,7 +125,7 @@ class CachedView(NavigableView, CacheListener):
     def on_resize(self):
         self._renderables_cache.content_width = self.scrollable_content_region.width
 
-    def clear(self) -> Self:
+    def clear(self) -> CachedView:
         self._renderables_cache.clear()
         self.max_width = 0
         self.virtual_size = Size(0, 0)

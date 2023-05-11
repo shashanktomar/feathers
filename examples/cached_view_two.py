@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import random
 from typing import cast
 
 from rich.style import Style
@@ -11,8 +10,9 @@ from textual.containers import Horizontal
 from examples._example_app import AppContainer, ExampleApp
 from feathers.widgets import CachedView
 
-TEXT_ONE = """Why did the chicken cross the road? To get to the other side! But then, why did the duck cross the road? To prove he wasn't chicken! And why did the turkey cross the road? To prove he wasn't a chicken either! But then, why did the cow cross the road? To get to the mooooooovies! And why did the sheep cross the road? To get to the ewe-nique boutique! And why did the horse cross the road? To get to the neigh-borhood bar! But why did the frog cross the road? To get to the croak-ery store! And why did the bee cross the road? To get to the honeycomb! And why did the snail cross the road? To get to the shell station!"""
+TEXT_ONE = """Why did the chicken cross the road? To get to the other side! But then, why did the duck cross the road? To prove he wasn't chicken! And why did the turkey cross the road? To prove he wasn't a chicken either! But then, why did the cow cross the road? To get to the mooooooovies! And why did the sheep cross the road? To get to the ewe-nique boutique! And why did the horse cross the road? To get to the neigh-borhood bar! But why did the frog cross the road? To get to the croak-ery store! And why did the bee cross the road? To get to the honeycomb! And why did the snail cross the road? To get to the shell station!"""  # noqa: E501
 
+# noqa: E501
 TEXT_TWO = """Once upon a time, there was a chicken who wanted to prove that crossing the road was not just for mundane reasons. So, why did the chicken cross the road? To show off its impressive dance moves! With feathers flapping and a beak tapping, it wowed the onlookers on the other side. But then, why did the duck cross the road? To teach a traffic safety class for poultry! Quacking out instructions with authority, it made sure every feathered friend knew the importance of looking both ways.
 
 Now, the chicken and the duck had started a trend, and soon enough, animals of all kinds joined in the road-crossing adventure. The turkey crossed the road, not to be outdone by its feathered counterparts, but to start a cooking show called 'Roadside Delights'—a feast on the move! With apron on, it sauntered across, sharing recipes for roadkill gourmet.
@@ -29,7 +29,7 @@ Lastly, the bee buzzed its way across the road, embarking on a sweet mission to 
 
 And as if that wasn't enough, the snail, known for its slow and steady pace, crossed the road to get to the shell station. Carrying its home on its back, it refueled with slime-powered energy and continued its leisurely journey, undeterred by the fast-paced world around it.
 
-So, you see, my friend, the road became a stage for adventures, dreams, and laughter. It was no longer a mere path from one place to another but a symbol of possibility and joy for all creatures, great and small. And that, my friend, is why they crossed the road!"""
+So, you see, my friend, the road became a stage for adventures, dreams, and laughter. It was no longer a mere path from one place to another but a symbol of possibility and joy for all creatures, great and small. And that, my friend, is why they crossed the road!"""  # noqa: E501
 
 
 class Container(AppContainer):

@@ -4,10 +4,9 @@ import io
 from rich.syntax import Syntax
 from rich.table import Table
 from textual import events
-from textual.app import App, ComposeResult
+from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widget import cast
-from textual.widgets import TextLog
 
 from examples._example_app import AppContainer, ExampleApp
 from feathers.widgets import CachedView
