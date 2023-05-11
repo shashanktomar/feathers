@@ -71,7 +71,7 @@ class NavigableView(ScrollView, can_focus=True):
             self._content_size = self.cursor_view.content_size
 
         @property
-        def control(self) -> NavigableView:
+        def control(self) -> NavigableView:  # type: ignore
             """Alias for self.cursor_view."""
             return self.cursor_view
 
