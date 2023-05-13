@@ -1,10 +1,11 @@
-Chat {
-    border: round white;
-    height: 1fr;
+Container {
+  layer: base;
 }
 
-Static {
-    border: round white;
-    height: 4;
-    color: $text-disabled;
+.box {
+  width: 1fr;
+  height: 1fr;
+  border: round white;
+  border-title-align: center; 
+  padding-left: 2;
 }

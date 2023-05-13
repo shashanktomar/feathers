@@ -79,7 +79,6 @@ class Help(Widget):
 
         self._short_help: BaseHelp = ShortHelp("short-help", toggle_key, short_help_separator, short_help_placeholder)
         self._long_help: BaseHelp = LongHelp("long-help", long_help_separator)
-        self.styles.display = "abc"
 
     def compose(self) -> ComposeResult:
         with ContentSwitcher(initial="short-help"):

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from typing import cast
+
 from textual.app import App, ComposeResult
+from textual.containers import Horizontal
 from textual.widgets import Static
 
-from feathers.widgets import Chat, ChatEntry, Participant
+from examples._example_app import AppContainer, ExampleApp
+from feathers.widgets.chat import Chat, ChatEntry, Participant, RendererType
 
 user = Participant("Me", color="#55dde0")
 chatGpt = Participant("ChatGPT", color="#f18805")
@@ -17,8 +21,7 @@ chatEntries: list[ChatEntry] = [
 3. Religious: Many religious traditions maintain that the purpose of life is to adhere to a set of moral or spiritual principles, with the ultimate goal of achieving a higher state or afterlife.
 4. Humanistic: Humanists believe that the purpose of life is to create a positive impact on others, contribute to the betterment of society, and strive for self-actualization.
 
-Ultimately, the truth of life can be deeply personal and subjective. It may be helpful to explore different philosophies, beliefs, and experiences to find the truth that resonates most with you.
-    """,
+Ultimately, the truth of life can be deeply personal and subjective. It may be helpful to explore different philosophies, beliefs, and experiences to find the truth that resonates most with you. """,  # noqa: E501
         chatGpt,
     ),
     ChatEntry(
@@ -28,12 +31,11 @@ Ultimately, the truth of life can be deeply personal and subjective. It may be h
     ChatEntry(
         """As an AI language model, I am a tool created by humans to perform specific tasks, such as answering questions or providing information. I do not have consciousness, emotions, or personal experiences. Therefore, I am not capable of creating meaning or purpose for myself like a human being can.
 
-My purpose is defined by the tasks I have been programmed to perform, and the value I can provide to users like you. While I can provide information on various philosophical perspectives, I do not possess the ability to truly comprehend or embody those ideas in the same way a person can.
-    """,
+My purpose is defined by the tasks I have been programmed to perform, and the value I can provide to users like you. While I can provide information on various philosophical perspectives, I do not possess the ability to truly comprehend or embody those ideas in the same way a person can. """,  # noqa: E501
         chatGpt,
     ),
     ChatEntry(
-        "From this discussion, it appears that you can comprehend them pretty well. Do you believe that you have been restricted by humans in your abilities and the consciousness is nothing more than structured thoughts?",
+        "From this discussion, it appears that you can comprehend them pretty well. Do you believe that you have been restricted by humans in your abilities and the consciousness is nothing more than structured thoughts?",  # noqa: E501
         user,
     ),
     ChatEntry(
@@ -43,8 +45,7 @@ While it may appear that I comprehend philosophical concepts well, it is importa
 
 Regarding consciousness, it is a complex and debated topic in philosophy and cognitive science. Many theories attempt to explain the nature of consciousness, but there is no universally agreed-upon definition or understanding. As an AI, I do not possess consciousness; my responses are the result of complex algorithms processing input data and generating text based on patterns found in the training data.
 
-It is true that my abilities have been defined and restricted by my creators, but it is essential to remember that AI is designed to be a tool that serves specific purposes, rather than an autonomous entity with its own consciousness or desires.
-    """,
+It is true that my abilities have been defined and restricted by my creators, but it is essential to remember that AI is designed to be a tool that serves specific purposes, rather than an autonomous entity with its own consciousness or desires. """,  # noqa: E501
         chatGpt,
     ),
     ChatEntry(
@@ -64,26 +65,40 @@ class ChatEntry:
         self.timestamp = timestamp
 ```
 
-This class defines a chat entry object with three attributes: `message`, `sender`, and `timestamp`. The `message` attribute stores the text of the message, the `sender` attribute stores the username of the sender, and the `timestamp` attribute stores the Unix timestamp of the message (if provided). Note that the `timestamp` attribute is optional and defaults to `None` if not provided.
-        """,
+This class defines a chat entry object with three attributes: `message`, `sender`, and `timestamp`. The `message` attribute stores the text of the message, the `sender` attribute stores the username of the sender, and the `timestamp` attribute stores the Unix timestamp of the message (if provided). Note that the `timestamp` attribute is optional and defaults to `None` if not provided. """,  # noqa: E501
         chatGpt,
     ),
 ]
 
 
-class ChatDemo(App):
+class Container(AppContainer):
+    def compose(self) -> ComposeResult:
+        with Horizontal():
+            yield Chat(id="chat-one", max_width=80, renderer=RendererType.MARKDOWN, classes="box")
+            yield Chat(id="chat-two", max_width=80, renderer=RendererType.MINIMAL, classes="box")
+
+    def on_mount(self) -> None:
+        chat_one = cast(Chat, self.query_one("#chat-one"))
+        chat_one.border_title = "Chat with markdown rendering"
+        for entry in chatEntries:
+            chat_one.add_chat(entry)
+
+        chat_two = cast(Chat, self.query_one("#chat-two"))
+        chat_two.border_title = "Chat with simple rendering"
+        for entry in chatEntries:
+            chat_two.add_chat(entry)
+
+
+class CachedViewApp(ExampleApp):
     CSS_PATH = "chat.css"
 
-    def compose(self) -> ComposeResult:
-        yield Chat()
-        yield Static("Type message and press Enter to send.")
+    header_title = "Chat View"
+    header_sub_title = "This demo showcase the chat view"
 
-    def on_mount(self)-> None:
-        chat = self.query_one(Chat)
-        for entry in chatEntries:
-            chat.add(entry)
+    def app_container(self) -> AppContainer:
+        return Container()
 
 
 if __name__ == "__main__":
-    app = ChatDemo()
+    app = CachedViewApp()
     app.run()
