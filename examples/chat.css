@@ -1,0 +1,11 @@
+Container {
+  layer: base;
+}
+
+.box {
+  width: 1fr;
+  height: 1fr;
+  border: round white;
+  border-title-align: center; 
+  padding-left: 2;
+}

@@ -1,0 +1,18 @@
+DividersContainer {
+  layer: base;
+}
+
+.box {
+  width: 1fr;
+  height: 1fr;
+  padding: 1;
+}
+
+.box-top-left {
+  border-right: $surface-lighten-2;
+  border-top: $surface-lighten-2;
+}
+
+.box-top-right {
+  border-top: $surface-lighten-2;
+}

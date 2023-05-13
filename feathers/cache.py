@@ -125,6 +125,7 @@ class RenderablesCache:
         for i in range(len(self._cache) - 1, -1, -1):
             if id in self._cache[i]:
                 self._cache.pop(i)
+        self._refresh_virtual_size()
 
     def _extract_lines(
         self,
@@ -160,16 +161,15 @@ class RenderablesCache:
         for strip in strips:
             strip.adjust_cell_length(render_width)
 
-        max_width = max(sum([segment.cell_length for segment in strip]) for strip in strips)
+        max_width = max(strip.cell_length for strip in strips)
         new_width = max(self._virtual_size.width, max_width)
         new_height = self._virtual_size.height + len(strips)
         self._virtual_size = Size(new_width, new_height)
-
-        # self.max_width = max(
-        #     self.max_width,
-        #     sum([segment.cell_length for segment in strip]),
-        # )
         return strips
+
+    def _refresh_virtual_size(self):
+        max_width = max(strip[1].cell_length for strip in self._cache)
+        self._virtual_size = Size(max_width, len(self._cache))
 
     def __len__(self) -> int:
         return len(self._cache)

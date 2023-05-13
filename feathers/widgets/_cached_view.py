@@ -25,6 +25,7 @@ class CachedView(NavigableView, CacheListener):
     }
     """
 
+    max_width: int | None = None
     wrap: bool = False
     highlight: bool = False
     markup: bool = False
@@ -33,6 +34,7 @@ class CachedView(NavigableView, CacheListener):
     def __init__(
         self,
         *,
+        max_width: int | None = None,
         wrap: bool = False,
         highlight: bool = False,
         markup: bool = False,
@@ -57,6 +59,8 @@ class CachedView(NavigableView, CacheListener):
             disabled: Whether the text log is disabled or not.
         """
         super().__init__(disable_cursor=not enable_cursor, name=name, id=id, classes=classes, disabled=disabled)
+        self.max_width = max_width
+        """Enforce max width of all the content"""
         self.wrap = wrap
         """Enable word wrapping."""
         self.highlight = highlight
@@ -91,7 +95,7 @@ class CachedView(NavigableView, CacheListener):
 
         return RenderableWithOptions(renderable, width, expand, shrink, self.wrap)
 
-    def write(
+    def add(
         self,
         content: RenderableType | object,
         width: int | None = None,
@@ -113,6 +117,7 @@ class CachedView(NavigableView, CacheListener):
             The `TextLog` instance.
         """
 
+        width = width or self.max_width
         renderable = self._extract_renderable(content, width, expand, shrink)
         self._renderables_cache.add(renderable)
 
