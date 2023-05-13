@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import cast
 
-from textual.app import App, ComposeResult
+from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Static
 
 from examples._example_app import AppContainer, ExampleApp
 from feathers.widgets.chat import Chat, ChatEntry, Participant, RendererType

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from rich import box
 from rich.console import Console, ConsoleOptions, ConsoleRenderable, RenderResult
 from rich.markdown import Markdown
-from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 from textual.widget import Widget

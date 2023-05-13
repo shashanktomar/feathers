@@ -3,12 +3,9 @@ from __future__ import annotations
 from typing import Literal
 
 from rich.align import AlignMethod
-from rich.box import Box
 from rich.cells import cell_len
 from rich.console import Console, ConsoleOptions, ConsoleRenderable, RenderResult
-from rich.panel import Panel
 from rich.style import Style
-from rich.table import box
 from rich.text import Text
 
 LabelType = Literal["simple", "box"]
