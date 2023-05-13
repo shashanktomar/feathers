@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/shashanktomar/feathers/compare/v0.1.2...v0.1.3) (2023-05-13)
+
+
+### Features
+
+* **cached-view:** add max_width property ([7faf590](https://github.com/shashanktomar/feathers/commit/7faf5900a5ce9550538afc40ffa85349b20c7475))
+* **chat:** add chat widget ([#12](https://github.com/shashanktomar/feathers/issues/12)) ([7faf590](https://github.com/shashanktomar/feathers/commit/7faf5900a5ce9550538afc40ffa85349b20c7475))
+* **renderables:** add divider-with-label renderable ([7faf590](https://github.com/shashanktomar/feathers/commit/7faf5900a5ce9550538afc40ffa85349b20c7475))
+
 ## [0.1.2](https://github.com/shashanktomar/feathers/compare/v0.1.1...v0.1.2) (2023-05-11)
 
 
