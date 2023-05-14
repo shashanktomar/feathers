@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass
+from typing import NewType
 
 from rich.console import Console, ConsoleOptions, RenderableType
 from rich.measure import Measurement
@@ -16,9 +17,13 @@ class CacheListener:
         pass
 
 
+CacheId = NewType("CacheId", str)
+
+
 @dataclass
 class RenderableWithOptions:
     renderableType: RenderableType
+    id: str | None = None
     width: int | None = None
     expand: bool | None = False
     strink: bool | None = True
@@ -40,10 +45,10 @@ class RenderablesCache:
         self._options = options if options is not None else console.options
         self._listener = listener
 
-        self._all_renderables: OrderedDict[int, RenderableWithOptions] = OrderedDict()
-        self._renderables_added: list[int] = []
-        self._renderables_removed: list[int] = []
-        self._cache: list[tuple[int, Strip]] = []
+        self._all_renderables: OrderedDict[CacheId, RenderableWithOptions] = OrderedDict()
+        self._renderables_added: list[CacheId] = []
+        self._renderables_removed: list[CacheId] = []
+        self._cache: list[tuple[CacheId, Strip]] = []
         self._virtual_size: Size = Size(0, 0)
 
         self._content_width: int | None = None
@@ -63,21 +68,26 @@ class RenderablesCache:
             self.refresh()
 
     def strip_at(self, index: int) -> Strip | None:
+        """Get the strip at given index from cache"""
         if index >= len(self._cache):
             return None
         return self._cache[index][1]
 
     def add(self, renderable: RenderableWithOptions):
-        renderable_id = id(renderable)
-        self._all_renderables[renderable_id] = renderable
-        self._renderables_added.append(renderable_id)
-        self._update_cache()
+        """Add a new renderable. Pass the id in renderable if you intend to update or remove it later"""
+        renderable_id = CacheId(renderable.id) if renderable.id else CacheId(str(id(renderable)))
+        if renderable_id not in self._all_renderables:
+            self._all_renderables[renderable_id] = renderable
+            self._renderables_added.append(renderable_id)
+            self._update_cache()
 
-    def remove(self, renderable: RenderableWithOptions):
-        renderable_id = id(renderable)
-        self._renderables_removed.append(renderable_id)
-        self._all_renderables.pop(renderable_id)
-        self._update_cache()
+    def remove(self, id: str):
+        """Remove the renderable from cache. If missing, the operation is ignored"""
+        renderable_id = CacheId(id)
+        if id in self._all_renderables:
+            self._renderables_removed.append(renderable_id)
+            self._all_renderables.pop(renderable_id)
+            self._update_cache()
 
     def refresh(self) -> None:
         self._cache.clear()
@@ -110,14 +120,14 @@ class RenderablesCache:
         if is_updated and self._listener is not None:
             self._listener.on_cache_update()
 
-    def _add_to_cache(self, id: int, renderable: RenderableWithOptions) -> None:
+    def _add_to_cache(self, id: CacheId, renderable: RenderableWithOptions) -> None:
         strips = self._extract_lines(renderable)
         if strips is None:
             return
         for strip in strips:
             self._cache.append((id, strip))
 
-    def _remove_from_cache(self, id: int) -> None:
+    def _remove_from_cache(self, id: CacheId) -> None:
         # By iterating over the list in reverse order, we can safely remove items without changing
         # the indices of the remaining items in the list. This approach can be more memory-efficient
         # than making a copy of the list to iterate over, especially for large lists, since we only need

@@ -58,26 +58,26 @@ class Container(AppContainer):
         box_six = cast(CachedView, self.query_one("#box-six"))
 
         box_one.border_title = "Focus Disabled"
-        box_one.add("This view is not focusable because cursor is disabled")
+        box_one.add_entry("This view is not focusable because cursor is disabled")
 
         box_two.border_title = "Single Line"
-        box_two.add("I am a single line of text but you can still navigate me")
+        box_two.add_entry("I am a single line of text but you can still navigate me")
 
         box_text = Text("This is how you can navigate multi-line text", style=self.style_msg)
         box_three.border_title = "Multi Line"
-        box_three.add(self.merge_text.join([box_text, Text(TEXT_ONE)]))
+        box_three.add_entry(self.merge_text.join([box_text, Text(TEXT_ONE)]))
 
         box_text = Text("Here is a longer text. Try scrolling with navigation keys", style=self.style_msg)
         box_four.border_title = "Scrollable"
-        box_four.add(self.merge_text.join([box_text, Text(TEXT_TWO)]))
+        box_four.add_entry(self.merge_text.join([box_text, Text(TEXT_TWO)]))
 
         box_text = Text("This time we auto-scrolled to bottom. Try going up", style=self.style_msg)
         box_five.border_title = "Auto Scroll To Bottom"
-        box_five.add(self.merge_text.join([Text(TEXT_TWO), box_text]))
+        box_five.add_entry(self.merge_text.join([Text(TEXT_TWO), box_text]))
 
         box_text = Text("This one scroll both ways", style=self.style_msg)
         box_six.border_title = "Scroll Both Ways"
-        box_six.add(self.merge_text.join([Text(TEXT_TWO), box_text]), shrink=False)
+        box_six.add_entry(self.merge_text.join([Text(TEXT_TWO), box_text]), shrink=False)
 
 
 class CachedViewApp(ExampleApp):

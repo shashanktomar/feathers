@@ -1,0 +1,23 @@
+Container {
+  layer: base;
+}
+
+.box {
+  width: 1fr;
+  height: 1fr;
+  border: round white;
+  border-title-align: center; 
+  padding: 1;
+}
+
+.box-dim {
+  width: 1fr;
+  height: 1fr;
+  border: round $surface-lighten-2;
+  border-title-align: center; 
+  padding: 1;
+}
+
+.box :focus {
+  border: round $accent;
+}

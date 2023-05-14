@@ -51,29 +51,29 @@ class Container(AppContainer):
         box_two = cast(CachedView, self.query_one("#box-two"))
         box_two.border_title = "You can write a lot"
         for i in range(6000):
-            box_two.add(f"{i} You can write a lot of content without loosing performance")
+            box_two.add_entry(f"{i} You can write a lot of content without loosing performance")
 
     def on_key(self, event: events.Key) -> None:
         """Write Key events to log."""
         view = cast(CachedView, self.query_one("#box-one"))
-        view.add(event)
+        view.add_entry(event)
 
     def _populate_box_one(self) -> None:
         box_one = cast(CachedView, self.query_one("#box-one"))
 
-        box_one.add(Syntax(CODE, "python", indent_guides=True, theme="github-dark"))
+        box_one.add_entry(Syntax(CODE, "python", indent_guides=True, theme="github-dark"))
 
         rows = iter(csv.reader(io.StringIO(CSV)))
         table = Table(*next(rows))
         for row in rows:
             table.add_row(*row)
 
-        box_one.add(table)
+        box_one.add_entry(table)
         box_one.border_title = "Really Rich Content"
-        box_one.add("[green]Yow can write text or any Rich renderable to CachedView!")
-        box_one.add("─" * 20)
-        box_one.add("[bold magenta] ==> Press any key")
-        box_one.add("─" * 20)
+        box_one.add_entry("[green]Yow can write text or any Rich renderable to CachedView!")
+        box_one.add_entry("─" * 20)
+        box_one.add_entry("[bold magenta] ==> Press any key")
+        box_one.add_entry("─" * 20)
 
 
 class CachedViewApp(ExampleApp):
