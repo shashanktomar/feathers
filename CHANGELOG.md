@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/shashanktomar/feathers/compare/v0.1.3...v0.1.4) (2023-05-14)
+
+
+### Features
+
+* **cached-view:** add remove_entry function to remove a renderable([#17](https://github.com/shashanktomar/feathers/issues/17)) ([05527a3](https://github.com/shashanktomar/feathers/commit/05527a37a70be0500c75bdde4794116b7448fa29))
+
 ## [0.1.3](https://github.com/shashanktomar/feathers/compare/v0.1.2...v0.1.3) (2023-05-13)
 
 
