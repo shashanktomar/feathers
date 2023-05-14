@@ -77,7 +77,12 @@ class CachedView(NavigableView, CacheListener):
         self._renderables_cache.refresh()
 
     def _extract_renderable(
-        self, content: RenderableType | object, width: int | None, expand: bool | None, shrink: bool | None
+        self,
+        content: RenderableType | object,
+        id: str | None,
+        width: int | None = None,
+        expand: bool | None = None,
+        shrink: bool | None = None,
     ) -> RenderableWithOptions:
         renderable: RenderableType
         if not is_renderable(content):
@@ -93,11 +98,13 @@ class CachedView(NavigableView, CacheListener):
             else:
                 renderable = cast(RenderableType, content)
 
-        return RenderableWithOptions(renderable, width, expand, shrink, self.wrap)
+        return RenderableWithOptions(renderable, id, width, expand, shrink, self.wrap)
 
     def add(
         self,
         content: RenderableType | object,
+        id: str | None = None,
+        *,
         width: int | None = None,
         expand: bool = False,
         shrink: bool = True,
@@ -107,18 +114,20 @@ class CachedView(NavigableView, CacheListener):
 
         Args:
             content: Rich renderable (or text).
-            width: Width to render or `None` to use optimal width.
-                Only used if either or both expand and shrink are True.
+            id: The renderable id which can later be used to remove or update the renderable. Can be missing if no
+            update or remove is intended
+            width: Width to render or `None` to use optimal width. Only used if either or both expand and shrink are
+            True.
             expand: Enable expand to widget width, or `False` to use `width`.
             shrink: Enable shrinking of content to fit width.
             scroll_end: Enable automatic scroll to end, or `None` to use `self.auto_scroll`.
 
         Returns:
-            The `TextLog` instance.
+            The `CachedView` instance.
         """
 
         width = width or self.max_width
-        renderable = self._extract_renderable(content, width, expand, shrink)
+        renderable = self._extract_renderable(content, id, width, expand, shrink)
         self._renderables_cache.add(renderable)
 
         auto_scroll = self.auto_scroll if scroll_end is None else scroll_end
@@ -127,8 +136,17 @@ class CachedView(NavigableView, CacheListener):
 
         return self
 
-    def on_resize(self):
-        self._renderables_cache.content_width = self.scrollable_content_region.width
+    def remove(self, id: str) -> CachedView:
+        """Remove a renderable from cache.
+
+        Args:
+            id: The id of the renderable to remove. If id is not found, the operation is ignored.
+
+        Returns:
+            The `CachedView` instance.
+        """
+        self._renderables_cache.remove(id)
+        return self
 
     def clear(self) -> CachedView:
         self._renderables_cache.clear()
@@ -136,6 +154,9 @@ class CachedView(NavigableView, CacheListener):
         self.virtual_size = Size(0, 0)
         self.refresh()
         return self
+
+    def on_resize(self):
+        self._renderables_cache.content_width = self.scrollable_content_region.width
 
     def on_cache_update(self):
         self.virtual_size = self._renderables_cache.virtual_size
