@@ -100,7 +100,7 @@ class CachedView(NavigableView, CacheListener):
 
         return RenderableWithOptions(renderable, id, width, expand, shrink, self.wrap)
 
-    def add(
+    def add_entry(
         self,
         content: RenderableType | object,
         id: str | None = None,
@@ -136,7 +136,7 @@ class CachedView(NavigableView, CacheListener):
 
         return self
 
-    def remove(self, id: str) -> CachedView:
+    def remove_entry(self, id: str) -> CachedView:
         """Remove a renderable from cache.
 
         Args:

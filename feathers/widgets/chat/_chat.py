@@ -73,7 +73,7 @@ class Chat(CachedView):
     def add_chat(self, entry: ChatEntry) -> None:
         self._entries.append(entry)
         renderable = ChatRenderable(self._renderer, entry)
-        self.add(renderable)
+        self.add_entry(renderable)
 
     def get_entries(self) -> list[ChatEntry]:
         return self._entries

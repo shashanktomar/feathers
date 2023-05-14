@@ -23,7 +23,7 @@ class Container(AppContainer):
 
     def _add_text(self, view: CachedView, id: int):
         text = Text(TEXT[: random.randint(1, len(TEXT))])
-        view.add(text, str(id))
+        view.add_entry(text, str(id))
 
     def on_mount(self) -> None:
         box_one = cast(CachedView, self.query_one("#box-one"))
@@ -33,7 +33,7 @@ class Container(AppContainer):
             style=Style(color="green"),
             end="\n\n",
         )
-        box_one.add(box_text)
+        box_one.add_entry(box_text)
 
         for i in range(5):
             self._add_text(box_one, i)
@@ -42,7 +42,7 @@ class Container(AppContainer):
     def on_add(self):
         box_one = cast(CachedView, self.query_one("#box-one"))
 
-        box_one.remove("warning")
+        box_one.remove_entry("warning")
         id = len(self.entry_ids)
         self._add_text(box_one, id)
         self.entry_ids.append(id)
@@ -51,10 +51,10 @@ class Container(AppContainer):
         box_one = cast(CachedView, self.query_one("#box-one"))
 
         if len(self.entry_ids) == 0:
-            box_one.add(Text("Chill, nothing to remove mate!", style=Style(color="red")), id="warning")
+            box_one.add_entry(Text("Chill, nothing to remove mate!", style=Style(color="red")), id="warning")
         else:
             id_to_remove = random.choice(self.entry_ids)
-            box_one.remove(str(id_to_remove))
+            box_one.remove_entry(str(id_to_remove))
             self.entry_ids.remove(id_to_remove)
 
     def on_update(self):
