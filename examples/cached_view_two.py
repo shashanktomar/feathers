@@ -61,7 +61,7 @@ class Container(AppContainer):
         box_one.add_entry("This view is not focusable because cursor is disabled")
 
         box_two.border_title = "Single Line"
-        box_two.add_entry("I am a single line of text but you can still navigate me")
+        box_two.add_entry("t 你好 e")
 
         box_text = Text("This is how you can navigate multi-line text", style=self.style_msg)
         box_three.border_title = "Multi Line"
